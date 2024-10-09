@@ -31,7 +31,7 @@ The function which is called can also accept a parameter and will be passed data
 The event data returned has:
 
 - `widget` - the guizero widget which raised the event
-- `tk_event` - the [tkinter event object](http://effbot.org/tkinterbook/tkinter-events-and-bindings.htm)
+- `tk_event` - the [tkinter event object](https://dafarry.github.io/tkinterbook/tkinter-events-and-bindings.htm)
 - `key` - the key which raised the event
 - `x` - the mouse's x position relative to the widget when the event occurred
 - `y` - the mouse's y position relative to the widget when the event occurred
@@ -39,13 +39,14 @@ The event data returned has:
 - `display_y` - the mouse's y position on the display when the event occurred
 - `width` - the width of the widget. 
 - `height` - the height of the widget.
+- `keycode` - the [keycode](https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/key-names.html) of the key which raised the event. 
 
 **Note:** only data relevant to the event will be returned. e.g. `key` is only returned for `when_key_#` events and `width` and `height` are only returned for `when_resized` events.
 
 ```python
 def clicked(event_data):
-    print("widget clicked = " + event_data.widget)
-    print("mouse position = " + event_data.x + "." + event_data.y)
+    print("widget clicked = ", event_data.widget)
+    print("mouse position = ", event_data.x, ".", event_data.y)
 
 widget.when_clicked = clicked
 ```

@@ -1,10 +1,10 @@
 from tkinter import Listbox, Frame, Scrollbar, END, BROWSE, EXTENDED
 from . import utilities as utils
-from .base import TextWidget, ContainerTextWidget, Widget
+from .base import TextWidget, ContainerWidget, Widget
 from .event import EventManager
 
 
-class ListBox(ContainerTextWidget):
+class ListBox(ContainerWidget):
 
     def __init__(
         self,
@@ -68,7 +68,7 @@ class ListBox(ContainerTextWidget):
 
         tk = Frame(master.tk)
 
-        super(ListBox, self).__init__(master, tk, "auto", grid, align, visible, enabled, width, height)
+        super().__init__(master, tk, "auto", grid, align, visible, enabled, width, height)
 
         self._listbox = ListBoxWidget(self, items, selected, command, None, "left", visible, enabled, multiselect, None, None)
         self._listbox.resize("fill", "fill")
@@ -99,7 +99,7 @@ class ListBox(ContainerTextWidget):
         # size and you cant make the control smaller than that.
         self._listbox._set_tk_config("width", None if width is None else 0)
         self._set_propagation(width, height)
-        super(ListBox, self).resize(width, height)
+        super().resize(width, height)
 
     @property
     def value(self):
@@ -183,7 +183,7 @@ class ListBoxWidget(TextWidget):
             for item in items:
                 tk.insert(END, item)
 
-        super(ListBoxWidget, self).__init__(master, tk, grid, align, visible, enabled, width, height)
+        super().__init__(master, tk, grid, align, visible, enabled, width, height)
 
         self.events.set_event("<ListBox.ListboxSelect>", "<<ListboxSelect>>", self._command_callback)
 
@@ -193,6 +193,13 @@ class ListBoxWidget(TextWidget):
 
         # The command associated with this combo
         self.update_command(command)
+
+    def _enable_and_update(self, func):
+        # the listbox widget needs to be enabled before change can be made
+        enabled_state = self.enabled
+        self.enabled = True
+        func()
+        self.enabled = enabled_state
 
     @property
     def value(self):
@@ -206,34 +213,48 @@ class ListBoxWidget(TextWidget):
 
     @value.setter
     def value(self, value):
-        self.tk.selection_clear(0, self.tk.size() - 1)
+        self._enable_and_update(
+            lambda: self.tk.selection_clear(0, self.tk.size() - 1)
+        )
 
         # go through all the items and select those in `value`
         for index in range(self.tk.size()):
             if self._multiselect:
                 for item in value:
                     if self.tk.get(index) == item:
-                        self.tk.select_set(index)
+                        self._enable_and_update(
+                            lambda: self.tk.select_set(index)
+                        )
             else:
                 if self.tk.get(index) == value:
-                    self.tk.select_set(index)
-
+                    self._enable_and_update(
+                        lambda: self.tk.select_set(index)
+                    )
+            
     def insert(self, index, item):
-        self.tk.insert(index, item)
-
+        self._enable_and_update(
+            lambda: self.tk.insert(index, item)
+        )
+        
     def append(self, item):
-        self.tk.insert(END, item)
+        self._enable_and_update(
+            lambda: self.insert(END, item)
+        )
 
     def remove(self, item):
         for index in range(len(self.items)):
             if item == self.items[index]:
-                self.tk.delete(index)
+                self._enable_and_update(
+                    lambda: self.tk.delete(index)
+                )
                 return True
 
         return False
 
     def clear(self):
-        self.tk.delete(0, END)
+        self._enable_and_update(
+            lambda: self.tk.delete(0, END)
+        )
 
     @property
     def items(self):

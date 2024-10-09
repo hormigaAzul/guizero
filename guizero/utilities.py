@@ -19,7 +19,7 @@ class GUIZeroException(Exception):
     pass
 
 # holds details about the configuration guizero is using
-class SystemConfig():
+class SystemConfig:
     def __init__(self):
         """
         Holds details about the system configuration guizero is using
@@ -82,7 +82,7 @@ class SystemConfig():
 system_config = SystemConfig()
 
 
-class GUIZeroImage():
+class GUIZeroImage:
     def __init__(self, image_source, width, height):
         """
         GUIZeroImage manages an "image" for guizero widgets, parsing its
@@ -221,7 +221,7 @@ class GUIZeroImage():
         # does it need resizing?
         if self._width != self._tk_image.width() or self._height != self._tk_image.height():
             if self._pil_image:
-                resized_image = self._pil_image.resize((self._width, self._height), Image.ANTIALIAS)
+                resized_image = self._pil_image.resize((self._width, self._height))
                 self._tk_image = ImageTk.PhotoImage(resized_image)
             else:
                 error_format("Image resizing - cannot scale the image as PIL is not available.")
@@ -232,7 +232,7 @@ class GUIZeroImage():
             try:
                 while True:
                     self._pil_image.seek(frame_count)
-                    tk_frame = ImageTk.PhotoImage(self._pil_image.resize((self._width, self._height), Image.ANTIALIAS))
+                    tk_frame = ImageTk.PhotoImage(self._pil_image.resize((self._width, self._height)))
 
                     try:
                         delay = self._pil_image.info['duration']
@@ -250,7 +250,7 @@ class GUIZeroImage():
                 self._animation = True
 
 
-class AnimationPlayer():
+class AnimationPlayer:
     def __init__(self, master, guizero_image, update_image_callback):
         """
         AnimationPlayer manages the playing of a animated gif for guizero

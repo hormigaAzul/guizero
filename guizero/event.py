@@ -1,7 +1,7 @@
 from . import utilities as utils
 
 
-class EventData():
+class EventData:
 
     def __init__(self, widget, tk_event):
         """
@@ -31,6 +31,13 @@ class EventData():
         The key which was pressed and generated the event.
         """
         return self._tk_event.char
+    
+    @property
+    def keycode(self):
+        """
+        The keycode of the key which was pressed and generated the event.
+        """
+        return self._tk_event.keycode
 
     @property
     def x(self):
@@ -159,7 +166,7 @@ class EventCallback():
         return self._tk_event
 
 
-class EventManager():
+class EventManager:
 
     def __init__(self, widget, *tks):
         """
